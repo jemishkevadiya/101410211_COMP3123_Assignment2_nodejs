@@ -1,0 +1,60 @@
+const Employee = require('../Models/employee');
+
+const createEmployee = async (req, res) => {
+    const { first_name, last_name, email, position, salary, date_of_joining, department } = req.body
+
+    const newEmployee = new Employee({
+        first_name, last_name, email, position, salary, date_of_joining, department
+    });
+
+    try {
+        await newEmployee.save();
+        res.status(201).json({ message: 'Employee created successfully', employee_id: newEmployee._id});
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+};
+
+const getAllEmployee = async (req, res) => {
+    try {
+        const employees = await Employee.find();
+        res.status(201).json({employees});
+    } catch (error) {
+        res.status(400).send({ error: error.message });
+    }
+}
+
+const getEmployeeById = async (req, res) => {
+    const {eid} = req.params;
+    try {
+        const employee = await Employee.findById(eid);
+        if (!employee) throw new Error('Employee not found');
+        res.status(400).send({ error: error.message });
+    } catch (error) {
+        res.status(400).send({ error: error.message });
+    }
+}
+
+const updateEmployee = async (re, res) => {
+    const {eid} = req.params;
+
+    try {
+        const updatedEmployee = await Employee.findByIdAndUpdate(eid, updates, {new: true});
+        if (!updatedEmployee)  throw new Error('Employee not found');
+        res.status(200).send(JSON.stringify({'message': 'Employee updated successfully', updatedEmployee}));
+    } catch (error) {
+        res.status(400).send({error: error.message});
+    }
+}
+
+const deleteEmployee = async (req, res) => {
+    const {eid} = req.params;
+
+    try {
+        const deletedEmployee = await Employee.findByIdAndDelete(eid);
+        if (!deletedEmployee) throw new Error('Employee not found');
+        res.status(204).json({message: 'Employee deleted successfully'});
+    } catch (error) {
+        res.status(400).send({error: error.message});
+    }
+}
